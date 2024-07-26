@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man Game</title>
+    <style>
+        .ocon {
+            height: 600px;
+            width: 500px;
+            border: 1px solid black;
+            position: relative;
+        }
+        .pacman {
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            border: 1px solid black;
+            background-color: yellow;
+            position: absolute;
+            top: 60px;
+            left: 60px;
+        }
+        #ghost {
+            height: 30px;
+            width: 30px;
+            border: 1px solid black;
+            background-color: red;
+            position: absolute;
+            bottom: 60px;
+            right: 60px;
+        }
+        .dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            background-color: blue;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="ocon">
+        <div class="pacman"></div>
+        <div id="ghost"></div>
+        <div class="dot" style="top: 150px; left: 150px;"></div>
+        <div class="dot" style="top: 250px; left: 350px;"></div>
+        <div class="dot" style="top: 450px; left: 250px;"></div>
+        <div class="dot" style="top: 300px; left: 100px;"></div>
+        <div class="dot" style="top: 100px; left: 400px;"></div>
+        <div class="dot" style="top: 400px; left: 400px;"></div>
+    </div>
+    <br>
+    <br>
+    <div class="buttons">
+        <input type="button" value="UP" onclick="mpac('u')">
+        <input type="button" value="DOWN" onclick="mpac('d')">
+        <input type="button" value="LEFT" onclick="mpac('l')">
+        <input type="button" value="RIGHT" onclick="mpac('r')">
+        <input type="button" value="START" onclick="startGame()">
+    </div>
+    <div id="score">Score: 0</div>
+    <script>
+        var pacmanSpeed = 20;
+        var ghostSpeed = 25;
+        var score = 0;
+        var pacman = document.querySelector('.pacman');
+        var ghost = document.getElementById('ghost');
+        var ocon = document.querySelector('.ocon');
+        var dots = document.querySelectorAll('.dot');
+        var gameStarted = false;
+
+        function startGame() {
+            gameStarted = true;
+            moveGhost();
+        }
+
+        function mpac(direction) {
+            if (!gameStarted) return;
+
+            var pacmanPos = pacman.getBoundingClientRect();
+            var oconPos = ocon.getBoundingClientRect();
+
+            switch (direction) {
+                case 'u':
+                    if (pacmanPos.top > oconPos.top) {
+                        pacman.style.top = (pacmanPos.top - oconPos.top - pacmanSpeed) + 'px';
+                    }
+                    break;
+                case 'd':
+                    if (pacmanPos.bottom < oconPos.bottom) {
+                        pacman.style.top = (pacmanPos.top - oconPos.top + pacmanSpeed) + 'px';
+                    }
+                    break;
+                case 'l':
+                    if (pacmanPos.left > oconPos.left) {
+                        pacman.style.left = (pacmanPos.left - oconPos.left - pacmanSpeed) + 'px';
+                    }
+                    break;
+                case 'r':
+                    if (pacmanPos.right < oconPos.right) {
+                        pacman.style.left = (pacmanPos.left - oconPos.left + pacmanSpeed) + 'px';
+                    }
+                    break;
+            }
+            checkDotCollision();
+            checkGameOver();
+        }
+
+        function moveGhost() {
+            if (!gameStarted) return;
+
+            var ghostPos = ghost.getBoundingClientRect();
+            var pacmanPos = pacman.getBoundingClientRect();
+            var oconPos = ocon.getBoundingClientRect();
+
+            var dx = pacmanPos.left - ghostPos.left;
+            var dy = pacmanPos.top - ghostPos.top;
+
+            var moveX = dx > 0 ? 1 : -1;
+            var moveY = dy > 0 ? 1 : -1;
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (ghostPos.left > oconPos.left && ghostPos.right < oconPos.right) {
+                    ghost.style.left = (ghostPos.left - oconPos.left + ghostSpeed * moveX) + 'px';
+                }
+            } else {
+                if (ghostPos.top > oconPos.top && ghostPos.bottom < oconPos.bottom) {
+                    ghost.style.top = (ghostPos.top - oconPos.top + ghostSpeed * moveY) + 'px';
+                }
+            }
+
+            setTimeout(moveGhost, 1000);
+            checkGameOver();
+        }
+
+        function checkDotCollision() {
+            dots.forEach(dot => {
+                var dotPos = dot.getBoundingClientRect();
+                var pacmanPos = pacman.getBoundingClientRect();
+
+                if (
+                    pacmanPos.left < dotPos.right &&
+                    pacmanPos.right > dotPos.left &&
+                    pacmanPos.top < dotPos.bottom &&
+                    pacmanPos.bottom > dotPos.top
+                ) {
+                    dot.style.display = 'none';
+                    score += 10;
+                    document.getElementById('score').innerText = 'Score: ' + score;
+
+                    var remainingDots = document.querySelectorAll('.dot');
+                    if (remainingDots.length === 0) {
+                        alert('You win! Your score: ' + score);
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+        function checkGameOver() {
+            var pacmanPos = pacman.getBoundingClientRect();
+            var ghostPos = ghost.getBoundingClientRect();
+
+            var dx = pacmanPos.left - ghostPos.left;
+            var dy = pacmanPos.top - ghostPos.top;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 25) {
+                alert('Game Over. Your score: ' + score);
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
