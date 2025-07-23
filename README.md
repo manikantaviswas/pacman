@@ -130,7 +130,7 @@ pacman-clone/
 
 **Developer**: Manikanta Viswas  
 **GitHub**: [@manikantaviswas](https://github.com/manikantaviswas)  
-**Project Link**:[ [https://github.com/manikantaviswas/pacman-clone](https://github.com/manikantaviswas/pacman-clone)](https://github.com/manikantaviswas/pacman/tree/main)
+**Project Link**:(https://github.com/manikantaviswas/pacman/tree/main)
 
 ---
 
